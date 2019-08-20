@@ -78,15 +78,34 @@ function Get-CitrixMonitorServiceData {
 
     begin {
         if ($Credential) {
-            $DeliveryControllers = Test-CitrixDDCConnectivity -DeliveryControllers $DeliveryControllers -Credential $Credential
+            $DeliveryControllers = Test-CitrixDDCConnectivity -DeliveryControllers $DeliveryControllers `
+            -Credential $Credential
         } else {
             $DeliveryControllers = Test-CitrixDDCConnectivity -DeliveryControllers $DeliveryControllers
         }
     }
 
     process {
-        $DeliveryControllers
-        $StartDate
-        $EndDate
+        foreach ($DeliveryController in $DeliveryControllers) {
+            if ($Credential) {
+                $DeliveryGroupsForDDC += Get-CitrixDeliveryGroups -DeliveryController $DeliveryController `
+                -Credential $Credential
+            } else {
+                $DeliveryGroupsForDDC += Get-CitrixDeliveryGroups -DeliveryController $DeliveryController
+            }
+            $DeliveryControllerObject = [PSCustomObject]@{
+                DeliveryControllerAddress = $DeliveryController
+                DeliveryGroups = $DeliveryGroupsForDDC
+            }
+            
+            # Construct the object that we will return and add the data from the loop
+            $CitrixMonitorServiceData = [PSCustomObject]@{
+                CreationDate = Get-Date -Format "yyyy-MM-ddTHH:mm:ss"
+                StartDate = Get-Date -Date $StartDate -Format "yyyy-MM-ddTHH:mm:ss"
+                EndDate = Get-Date -Date $EndDate -Format "yyyy-MM-ddTHH:mm:ss"
+                DeliveryControllers = $DeliveryControllerObject
+            }
+        }
+        $CitrixMonitorServiceData
     }
 }
