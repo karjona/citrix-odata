@@ -88,14 +88,41 @@ function Get-CitrixMonitorServiceData {
     process {
         foreach ($DeliveryController in $DeliveryControllers) {
             if ($Credential) {
-                $DeliveryGroupsForDDC += Get-CitrixDeliveryGroups -DeliveryController $DeliveryController `
+                $DeliveryGroupsForDDC = Get-CitrixDeliveryGroups -DeliveryController $DeliveryController `
                 -Credential $Credential
             } else {
-                $DeliveryGroupsForDDC += Get-CitrixDeliveryGroups -DeliveryController $DeliveryController
+                $DeliveryGroupsForDDC = Get-CitrixDeliveryGroups -DeliveryController $DeliveryController
             }
+
+            if ($DeliveryGroupsForDDC.length -ge 1) {
+                $DeliveryGroupInfo = @()
+                if ($Credential) {
+                    $ConcurrentSessionsForDDC = Get-CitrixConcurrentSessions `
+                    -DeliveryController $DeliveryController -Credential $Credential -StartDate $StartDate `
+                    -EndDate $EndDate
+                } else {
+                    $ConcurrentSessionsForDDC = Get-CitrixConcurrentSessions `
+                    -DeliveryController $DeliveryController -StartDate $StartDate -EndDate $EndDate
+                }
+                foreach ($DeliveryGroup in $DeliveryGroupsForDDC) {
+                    $ConcurrentSessionsForDeliveryGroup = $ConcurrentSessionsForDDC.value | `
+                    Where-Object -FilterScript { $_.DesktopGroupId -eq $DeliveryGroup.Id}
+                    $MaxSessionsForDeliveryGroup = $ConcurrentSessionsForDeliveryGroup.ConcurrentSessionCount | `
+                    Measure-Object -Maximum | Select-Object -ExpandProperty Maximum
+                    if ($null -eq $MaxSessionsForDeliveryGroup) {
+                        $MaxSessionsForDeliveryGroup = 0
+                    }
+                    $DeliveryGroupInfo += [PSCustomObject]@{
+                        Name = $DeliveryGroup.Name
+                        Id = $DeliveryGroup.Id
+                        MaxConcurrentSessions = $MaxSessionsForDeliveryGroup
+                    }
+                }
+            }
+
             $DeliveryControllerObject = [PSCustomObject]@{
                 DeliveryControllerAddress = $DeliveryController
-                DeliveryGroups = $DeliveryGroupsForDDC
+                DeliveryGroups = $DeliveryGroupInfo
             }
             
             # Construct the object that we will return and add the data from the loop
