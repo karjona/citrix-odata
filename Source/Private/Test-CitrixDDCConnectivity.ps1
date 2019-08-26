@@ -52,41 +52,14 @@ function Test-CitrixDDCConnectivity {
         foreach ($ddc in $DeliveryControllers) {
             try {
                 if ($Credential) {
-                    Invoke-RestMethod -Uri "http://$ddc/Citrix/Monitor/OData/v3/Data/" `
-                    -Credential $Credential | Out-Null
+                    Invoke-CitrixMonitorServiceQuery -DeliveryController $ddc -Credential $Credential `
+                    -ErrorAction Stop | Out-Null
                 } else {
-                    Invoke-RestMethod -Uri "http://$ddc/Citrix/Monitor/OData/v3/Data/" `
-                    -UseDefaultCredentials | Out-Null
+                    Invoke-CitrixMonitorServiceQuery -DeliveryController $ddc -ErrorAction Stop | Out-Null
                 }
             } catch {
                 $ConnectionError = $_
-                # Handle 401 (invalid credentials) error
-                if ($ConnectionError.Exception.Response.StatusCode) {
-                    if ($ConnectionError.Exception.Response.StatusCode.ToString() -eq 'Unauthorized') {
-                        if (!$Credential) {
-                            Write-Error ("The current user does not have at least read-only administrator " +
-                            "permissions on $ddc.")
-                        } else {
-                            Write-Error ("The supplied credentials do not have at least read-only administrator " +
-                            "permissions on $ddc.")
-                        }
-                    # There's a web server on that address, but responded with an error (404, 500...)
-                    } else {
-                        Write-Error ("The server on $ddc responded with an error: " +
-                        "$($ConnectionError.Exception.Message)")
-                    }
-                } else {
-                    # Handle DNS resolution errors
-                    if ($ConnectionError.Exception.Status.ToString() -eq 'NameResolutionFailure') {
-                        Write-Error "Could not find host $ddc."
-                    # Handle all other errors
-                    } else {
-                        Write-Error ("An error occurred while trying to connect to $ddc. Check network " +
-                        "connectivity and that the specified host is a Citrix Delivery Controller.`r`n" +
-                        "$($ConnectionError.Exception.Message)")
-                    }
-                }
-                # Remove the failed DDC from the DDCs list
+                Write-Error "Could not connect to $ddc`: $ConnectionError"
                 $DeliveryControllers = $DeliveryControllers | Where-Object -FilterScript {$_ -ne $ddc}
             } finally {
                 if (!$DeliveryControllers) {
