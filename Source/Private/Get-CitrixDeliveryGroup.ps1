@@ -39,13 +39,14 @@ function Get-CitrixDeliveryGroups {
             $Query = '$select=Id,Name'
             if ($Credential) {
                 $DeliveryGroups = Invoke-CitrixMonitorServiceQuery -DeliveryController $DeliveryController `
-                -Credential $Credential -Endpoint 'DesktopGroups' -Query $Query
+                -Credential $Credential -Endpoint 'DesktopGroups' -Query $Query -ErrorAction Stop
             } else {
                 $DeliveryGroups = Invoke-CitrixMonitorServiceQuery -DeliveryController $DeliveryController `
-                -Credential $Credential -Endpoint 'DesktopGroups' -Query $Query
+                -Credential $Credential -Endpoint 'DesktopGroups' -Query $Query -ErrorAction Stop
             }
         } catch {
-
+            $ConnectionError = $_
+            throw $ConnectionError
         }
         $DeliveryGroups.value
     }
