@@ -36,15 +36,13 @@ function Get-CitrixDeliveryGroups {
 
     process {
         try {
-            $ODataParams = '$format=json&$select=Id,Name'
+            $Query = '$select=Id,Name'
             if ($Credential) {
-                $DeliveryGroups = Invoke-RestMethod -Uri `
-                "http://$DeliveryController/Citrix/Monitor/OData/v3/Data/DesktopGroups?$ODataParams" `
-                -Credential $Credential
+                $DeliveryGroups = Invoke-CitrixMonitorServiceQuery -DeliveryController $DeliveryController `
+                -Credential $Credential -Endpoint 'DesktopGroups' -Query $Query
             } else {
-                $DeliveryGroups = Invoke-RestMethod -Uri `
-                "http://$DeliveryController/Citrix/Monitor/OData/v3/Data/DesktopGroups?$ODataParams" `
-                -UseDefaultCredentials
+                $DeliveryGroups = Invoke-CitrixMonitorServiceQuery -DeliveryController $DeliveryController `
+                -Credential $Credential -Endpoint 'DesktopGroups' -Query $Query
             }
         } catch {
 
