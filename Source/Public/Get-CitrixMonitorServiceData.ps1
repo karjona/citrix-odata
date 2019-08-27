@@ -43,11 +43,18 @@ function Get-CitrixMonitorServiceData {
     The default value is yesterday's date, 23:59:59.
     
     .EXAMPLE
-    Get-CitrixMonitorServiceData -DeliveryControllers $ddcs = @('myddc01.example.com', 'myddc02.example.com') ` -Credential Get-Credential
+    Get-CitrixMonitorServiceData -DeliveryControllers @('myddc01.example.com', 'myddc02.example.com') -Credential $(Get-Credential)
     
     Example 1: Get the usage data for the past day
     Returns the usage data for all Delivery Groups present on myddc01 and myddc02 Delivery Controllers using the
     specified credentials. The returned custom object will contain yesterday's usage data.
+    
+    .EXAMPLE
+    Get-CitrixMonitorServiceData -DeliveryControllers 'myddc01.example.com' -StartDate '2019-08-01T00:00:00' -EndDate '2019-08-31T23:59:59'
+    
+    Example 2: Get the usage data for the month of August
+    Returns the usage data for all Delivery Groups present on myddc01 using the credentials of the current user.
+    The returned custom object will contain the usage data for the month of August 2019.
     
     .COMPONENT
     citrix-odata
@@ -93,7 +100,7 @@ function Get-CitrixMonitorServiceData {
             } else {
                 $DeliveryGroupsForDDC = Get-CitrixDeliveryGroups -DeliveryController $DeliveryController
             }
-
+            
             if ($DeliveryGroupsForDDC.length -ge 1) {
                 $DeliveryGroupInfo = @()
                 if ($Credential) {
@@ -104,7 +111,7 @@ function Get-CitrixMonitorServiceData {
                     $ConcurrentSessionsForDDC = Get-CitrixConcurrentSessions `
                     -DeliveryController $DeliveryController -StartDate $StartDate -EndDate $EndDate
                 }
-
+                
                 foreach ($DeliveryGroup in $DeliveryGroupsForDDC) {
                     $DeliveryGroupInfo += [PSCustomObject]@{
                         Name = $DeliveryGroup.Name
@@ -114,7 +121,7 @@ function Get-CitrixMonitorServiceData {
                     }
                 }
             }
-
+            
             $DeliveryControllerObject = [PSCustomObject]@{
                 DeliveryControllerAddress = $DeliveryController
                 DeliveryGroups = $DeliveryGroupInfo
