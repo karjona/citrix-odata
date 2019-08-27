@@ -104,18 +104,13 @@ function Get-CitrixMonitorServiceData {
                     $ConcurrentSessionsForDDC = Get-CitrixConcurrentSessions `
                     -DeliveryController $DeliveryController -StartDate $StartDate -EndDate $EndDate
                 }
+
                 foreach ($DeliveryGroup in $DeliveryGroupsForDDC) {
-                    $ConcurrentSessionsForDeliveryGroup = $ConcurrentSessionsForDDC.value | `
-                    Where-Object -FilterScript { $_.DesktopGroupId -eq $DeliveryGroup.Id}
-                    $MaxSessionsForDeliveryGroup = $ConcurrentSessionsForDeliveryGroup.ConcurrentSessionCount | `
-                    Measure-Object -Maximum | Select-Object -ExpandProperty Maximum
-                    if ($null -eq $MaxSessionsForDeliveryGroup) {
-                        $MaxSessionsForDeliveryGroup = 0
-                    }
                     $DeliveryGroupInfo += [PSCustomObject]@{
                         Name = $DeliveryGroup.Name
                         Id = $DeliveryGroup.Id
-                        MaxConcurrentSessions = $MaxSessionsForDeliveryGroup
+                        MaxConcurrentSessions = Get-CitrixMaximumSessionsForDG `
+                        -SessionsObject $ConcurrentSessionsForDDC -DeliveryGroupId $DeliveryGroup.Id
                     }
                 }
             }
