@@ -44,8 +44,21 @@ function Get-CitrixConcurrentSessions {
     
     process {
         try {
-            #$Query = "`$filter=(SummaryDate gt DateTime'$(Get-Date -Date $StartDate -Format "yyyy-MM-ddTHH:mm:ss")') and (SummaryDate lt DateTime'$(Get-Date -Date $EndDate -Format "yyyy-MM-ddTHH:mm:ss")') and (Granularity eq 1440)"
-            $Query = "`$filter=(SummaryDate gt DateTime'$(Get-Date -Date $StartDate -Format "yyyy-MM-ddTHH:mm:ss")') and (SummaryDate lt DateTime'$(Get-Date -Date $EndDate -Format "yyyy-MM-ddTHH:mm:ss")')"
+            $Timespan = New-TimeSpan -Start $StartDate -End $EndDate
+            if ($Timespan.TotalSeconds -le 3600) { # Less than an hour, request per-minute granularity
+                $Granularity = '1'
+            } elseif ($Timespan.TotalSeconds -le 2592000) { # Less than 30 days, request per-hour granularity
+                $Granularity = '60'
+            } else {
+                $Granularity = '1440' # More than a month, request per-day granularity
+            }
+
+            $Query = (
+            "`$filter=(SummaryDate gt DateTime'$(Get-Date -Date $StartDate -Format "yyyy-MM-ddTHH:mm:ss")') and " +
+            "(SummaryDate lt DateTime'$(Get-Date -Date $EndDate -Format "yyyy-MM-ddTHH:mm:ss")') and " +
+            "(Granularity eq $Granularity)"
+            )
+            
             if ($Credential) {
                 $ConcurrentSessions = Invoke-CitrixMonitorServiceQuery -DeliveryController $DeliveryController `
                 -Credential $Credential -Endpoint 'SessionActivitySummaries' -Query $Query -ErrorAction Stop
