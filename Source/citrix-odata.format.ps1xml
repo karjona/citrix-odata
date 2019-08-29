@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Configuration>
+    <ViewDefinitions>
+        <View>
+            <Name>CitrixMonitorServiceData</Name>
+            <ViewSelectedBy>
+                <TypeName>citrix-odata.CitrixMonitorServiceData</TypeName>
+            </ViewSelectedBy>
+            <GroupBy>
+                <Label>Delivery Controller</Label>
+                <ScriptBlock>$_.DeliveryControllers.DeliveryControllerAddress</ScriptBlock>
+            </GroupBy>
+            <TableControl>
+                <TableHeaders>
+                    <TableColumnHeader>
+                        <Label>Delivery Group</Label>
+                        <Width>80</Width>
+                    </TableColumnHeader>
+                    <TableColumnHeader>
+                        <Label>Max Concurrent Sessions</Label>
+                        <Width>25</Width>
+                    </TableColumnHeader>
+                </TableHeaders>
+                <TableRowEntries>
+                    <TableRowEntry>
+                        <TableColumnItems>
+                            <TableColumnItem>
+                                <ScriptBlock>$_.DeliveryControllers[].DeliveryGroups[]</ScriptBlock>
+                            </TableColumnItem>
+                            <TableColumnItem>
+                                <ScriptBlock>$_.DeliveryControllers[].DeliveryGroups[].MaxConcurrentSessions</ScriptBlock>
+                            </TableColumnItem>
+                        </TableColumnItems>
+                    </TableRowEntry>
+                </TableRowEntries>
+            </TableControl>
+        </View>
+    </ViewDefinitions>
+</Configuration>

@@ -61,7 +61,7 @@ function Get-CitrixMonitorServiceData {
     #>
     
     [CmdletBinding()]
-    [OutputType('PSCustomObject')]
+    [OutputType('citrix-odata.CitrixMonitorServiceData')]
     
     param(
     [Parameter(Mandatory=$true, ValueFromPipeline=$true, Position=0, HelpMessage='Enter one or more Delivery' +
@@ -129,6 +129,7 @@ function Get-CitrixMonitorServiceData {
             
             # Construct the object that we will return and add the data from the loop
             $CitrixMonitorServiceData = [PSCustomObject]@{
+                PSTypeName = 'citrix-odata.CitrixMonitorServiceData'
                 CreationDate = Get-Date -Format "yyyy-MM-ddTHH:mm:ss"
                 StartDate = Get-Date -Date $StartDate -Format "yyyy-MM-ddTHH:mm:ss"
                 EndDate = Get-Date -Date $EndDate -Format "yyyy-MM-ddTHH:mm:ss"
