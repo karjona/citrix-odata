@@ -30,10 +30,10 @@ function Get-CitrixMaximumSessionsForDG {
     )
     
     process {
-        $ConcurrentSessionsForDeliveryGroup = $SessionsObject.value | `
-        Where-Object -FilterScript { $_.DesktopGroupId -eq $DeliveryGroupId }
-        $MaxSessionsForDeliveryGroup = $ConcurrentSessionsForDeliveryGroup.ConcurrentSessionCount | `
-        Measure-Object -Maximum | Select-Object -ExpandProperty Maximum
+        $MaxSessionsForDeliveryGroup = $SessionsObject.value | Group-Object -Property DesktopGroupId | `
+        Where-Object -FilterScript {$_.Name -eq $DeliveryGroupId } | Select-Object -ExpandProperty Group | `
+        Sort-Object -Property ConcurrentSessionCount -Descending | `
+        Select-Object -ExpandProperty ConcurrentSessionCount -First 1
         if ($null -eq $MaxSessionsForDeliveryGroup) {
             $MaxSessionsForDeliveryGroup = 0
         }
