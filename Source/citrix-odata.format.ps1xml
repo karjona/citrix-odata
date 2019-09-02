@@ -6,15 +6,15 @@
             <ViewSelectedBy>
                 <TypeName>citrix-odata.CitrixMonitorServiceData</TypeName>
             </ViewSelectedBy>
-            <GroupBy>
-                <Label>Delivery Controller</Label>
-                <ScriptBlock>$_.DeliveryControllers.DeliveryControllerAddress</ScriptBlock>
-            </GroupBy>
             <TableControl>
                 <TableHeaders>
                     <TableColumnHeader>
-                        <Label>Delivery Group</Label>
-                        <Width>80</Width>
+                        <Label>Delivery Controller</Label>
+                        <Width>40</Width>
+                    </TableColumnHeader>
+                    <TableColumnHeader>
+                        <Label>Delivery Groups</Label>
+                        <Width>50</Width>
                     </TableColumnHeader>
                     <TableColumnHeader>
                         <Label>Max Concurrent Sessions</Label>
@@ -25,10 +25,13 @@
                     <TableRowEntry>
                         <TableColumnItems>
                             <TableColumnItem>
-                                <ScriptBlock>$_.DeliveryControllers[].DeliveryGroups[]</ScriptBlock>
+                                <ScriptBlock>$_.DeliveryControllers.DeliveryControllerAddress</ScriptBlock>
                             </TableColumnItem>
                             <TableColumnItem>
-                                <ScriptBlock>$_.DeliveryControllers[].DeliveryGroups[].MaxConcurrentSessions</ScriptBlock>
+                                <ScriptBlock>$_.DeliveryControllers.DeliveryGroups.Name</ScriptBlock>
+                            </TableColumnItem>
+                            <TableColumnItem>
+                                <ScriptBlock>$_.DeliveryControllers.DeliveryGroups.MaxConcurrentSessions</ScriptBlock>
                             </TableColumnItem>
                         </TableColumnItems>
                     </TableRowEntry>

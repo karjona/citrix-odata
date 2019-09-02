@@ -114,6 +114,7 @@ function Get-CitrixMonitorServiceData {
                 
                 foreach ($DeliveryGroup in $DeliveryGroupsForDDC) {
                     $DeliveryGroupInfo += [PSCustomObject]@{
+                        PSTypeName = 'citrix-odata.CitrixMonitorDeliveryGroupInfo'
                         Name = $DeliveryGroup.Name
                         Id = $DeliveryGroup.Id
                         MaxConcurrentSessions = Get-CitrixMaximumSessionsForDG `
@@ -123,6 +124,7 @@ function Get-CitrixMonitorServiceData {
             }
             
             $DeliveryControllerObject = [PSCustomObject]@{
+                PSTypeName = 'citrix-odata.CitrixMonitorServiceDeliveryController'
                 DeliveryControllerAddress = $DeliveryController
                 DeliveryGroups = $DeliveryGroupInfo
             }
