@@ -84,12 +84,16 @@ function Get-CitrixMonitorServiceData {
     )
     
     begin {
+        Write-Progress -Id 0 -Activity 'Retrieving Citrix Virtual Apps & Desktops usage data' `
+        -Status 'Attempting to connect to Delivery Controllers'
         if ($Credential) {
             $DeliveryControllers = Test-CitrixDDCConnectivity -DeliveryControllers $DeliveryControllers `
             -Credential $Credential
         } else {
             $DeliveryControllers = Test-CitrixDDCConnectivity -DeliveryControllers $DeliveryControllers
         }
+        Write-Progress -Id 0 -Activity 'Attempting to connect to Delivery Controllers' `
+        -Status 'Attempting to connect to Delivery Controllers' -Completed
     }
     
     process {

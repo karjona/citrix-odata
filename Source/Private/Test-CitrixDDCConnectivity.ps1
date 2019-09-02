@@ -49,7 +49,10 @@ function Test-CitrixDDCConnectivity {
     )
     
     process {
+        $OriginalDDCs = $DeliveryControllers
         foreach ($ddc in $DeliveryControllers) {
+            Write-Progress -Id 1 -Activity "Connecting to $ddc" `
+            -PercentComplete ($OriginalDDCs.IndexOf($ddc)/$OriginalDDCs.Count*100)
             try {
                 if ($Credential) {
                     Invoke-CitrixMonitorServiceQuery -DeliveryController $ddc -Credential $Credential `
@@ -62,6 +65,7 @@ function Test-CitrixDDCConnectivity {
                 Write-Error "Could not connect to $ddc`: $ConnectionError"
                 $DeliveryControllers = $DeliveryControllers | Where-Object -FilterScript {$_ -ne $ddc}
             } finally {
+                Write-Progress -Id 1 -Activity "Connecting to $ddc" -Completed
                 if (!$DeliveryControllers) {
                     throw "Could not connect to any of the specified Delivery Controllers."
                 }
