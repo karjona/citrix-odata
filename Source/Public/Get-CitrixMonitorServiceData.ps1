@@ -97,7 +97,14 @@ function Get-CitrixMonitorServiceData {
     }
     
     process {
+        if ($DeliveryControllers.Count -ge 2) {
+            $DeliveryControllerObject = @()
+        }
+
         foreach ($DeliveryController in $DeliveryControllers) {
+            Write-Progress -Id 0 -Activity 'Retrieving Citrix Virtual Apps & Desktops usage data' `
+            -Status 'Retrieving usage data for Delivery Controllers'
+
             if ($Credential) {
                 $DeliveryGroupsForDDC = Get-CitrixDeliveryGroups -DeliveryController $DeliveryController `
                 -Credential $Credential
@@ -127,20 +134,30 @@ function Get-CitrixMonitorServiceData {
                 }
             }
             
-            $DeliveryControllerObject = [PSCustomObject]@{
+            Write-Progress -Id 0 -Activity 'Retrieving Citrix Virtual Apps & Desktops usage data' `
+            -Status 'Retrieving usage data for Delivery Controllers' -Completed
+            
+            
+            Write-Progress -Id 0 -Activity 'Retrieving Citrix Virtual Apps & Desktops usage data' `
+            -Status 'Preparing usage data object'
+            
+            $DeliveryControllerObject += [PSCustomObject]@{
                 PSTypeName = 'citrix-odata.CitrixMonitorServiceDeliveryController'
                 DeliveryControllerAddress = $DeliveryController
                 DeliveryGroups = $DeliveryGroupInfo
             }
             
-            # Construct the object that we will return and add the data from the loop
-            $CitrixMonitorServiceData = [PSCustomObject]@{
-                PSTypeName = 'citrix-odata.CitrixMonitorServiceData'
-                CreationDate = Get-Date -Format "yyyy-MM-ddTHH:mm:ss"
-                StartDate = Get-Date -Date $StartDate -Format "yyyy-MM-ddTHH:mm:ss"
-                EndDate = Get-Date -Date $EndDate -Format "yyyy-MM-ddTHH:mm:ss"
-                DeliveryControllers = $DeliveryControllerObject
-            }
+            Write-Progress -Id 0 -Activity 'Retrieving Citrix Virtual Apps & Desktops usage data' `
+            -Status 'Preparing usage data object' -Completed
+        }
+        
+        # Construct the object that we will return and add the data from the loop
+        $CitrixMonitorServiceData = [PSCustomObject]@{
+            PSTypeName = 'citrix-odata.CitrixMonitorServiceData'
+            CreationDate = Get-Date -Format "yyyy-MM-ddTHH:mm:ss"
+            StartDate = Get-Date -Date $StartDate -Format "yyyy-MM-ddTHH:mm:ss"
+            EndDate = Get-Date -Date $EndDate -Format "yyyy-MM-ddTHH:mm:ss"
+            DeliveryControllers = $DeliveryControllerObject
         }
         $CitrixMonitorServiceData
     }
