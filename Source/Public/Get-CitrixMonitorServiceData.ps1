@@ -92,7 +92,7 @@ function Get-CitrixMonitorServiceData {
         } else {
             $DeliveryControllers = Test-CitrixDDCConnectivity -DeliveryControllers $DeliveryControllers
         }
-        Write-Progress -Id 0 -Activity 'Attempting to connect to Delivery Controllers' `
+        Write-Progress -Id 0 -Activity 'Retrieving Citrix Virtual Apps & Desktops usage data' `
         -Status 'Attempting to connect to Delivery Controllers' -Completed
     }
     
