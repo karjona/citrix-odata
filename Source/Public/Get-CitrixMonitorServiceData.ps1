@@ -112,7 +112,7 @@ function Get-CitrixMonitorServiceData {
                 $DeliveryGroupsForDDC = Get-CitrixDeliveryGroups -DeliveryController $DeliveryController
             }
             
-            if ($DeliveryGroupsForDDC.length -ge 1) {
+            if ($DeliveryGroupsForDDC.value.length -ge 1) {
                 $DeliveryGroupInfo = @()
                 if ($Credential) {
                     $ConcurrentSessionsForDDC = Get-CitrixConcurrentSessions `
@@ -123,7 +123,7 @@ function Get-CitrixMonitorServiceData {
                     -DeliveryController $DeliveryController -StartDate $StartDate -EndDate $EndDate
                 }
                 
-                foreach ($DeliveryGroup in $DeliveryGroupsForDDC) {
+                foreach ($DeliveryGroup in $DeliveryGroupsForDDC.value) {
                     $DeliveryGroupInfo += [PSCustomObject]@{
                         PSTypeName = 'citrix-odata.CitrixMonitorDeliveryGroupInfo'
                         Name = $DeliveryGroup.Name
@@ -132,6 +132,8 @@ function Get-CitrixMonitorServiceData {
                         -SessionsObject $ConcurrentSessionsForDDC -DeliveryGroupId $DeliveryGroup.Id
                     }
                 }
+            } else {
+                $DeliveryGroupInfo = $null
             }
             
             Write-Progress -Id 0 -Activity 'Retrieving Citrix Virtual Apps & Desktops usage data' `
@@ -141,10 +143,17 @@ function Get-CitrixMonitorServiceData {
             Write-Progress -Id 0 -Activity 'Retrieving Citrix Virtual Apps & Desktops usage data' `
             -Status 'Preparing usage data object'
             
-            $DeliveryControllerObject += [PSCustomObject]@{
-                PSTypeName = 'citrix-odata.CitrixMonitorServiceDeliveryController'
-                DeliveryControllerAddress = $DeliveryController
-                DeliveryGroups = $DeliveryGroupInfo
+            if ($DeliveryGroupInfo.length -ge 1) {
+                $DeliveryControllerObject += [PSCustomObject]@{
+                    PSTypeName = 'citrix-odata.CitrixMonitorServiceDeliveryController'
+                    DeliveryControllerAddress = $DeliveryController
+                    DeliveryGroups = $DeliveryGroupInfo
+                }
+            } else {
+                $DeliveryControllerObject += [PSCustomObject]@{
+                    PSTypeName = 'citrix-odata.CitrixMonitorServiceDeliveryController'
+                    DeliveryControllerAddress = $DeliveryController
+                }
             }
             
             Write-Progress -Id 0 -Activity 'Retrieving Citrix Virtual Apps & Desktops usage data' `

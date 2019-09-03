@@ -36,7 +36,7 @@ function Get-CitrixDeliveryGroups {
     
     process {
         try {
-            $Query = '$select=Id,Name'
+            $Query = '$select=Id,Name&$filter=LifecycleState eq 0'
             if ($Credential) {
                 $DeliveryGroups = Invoke-CitrixMonitorServiceQuery -DeliveryController $DeliveryController `
                 -Credential $Credential -Endpoint 'DesktopGroups' -Query $Query -ErrorAction Stop
@@ -48,6 +48,6 @@ function Get-CitrixDeliveryGroups {
             $ConnectionError = $_
             throw $ConnectionError
         }
-        $DeliveryGroups.value
+        $DeliveryGroups
     }
 }
