@@ -1,0 +1,7 @@
+{
+    "DeliveryControllers": [
+        "myddc01.example.com", "myddc02.example.com"
+    ],
+    "username": "example\\administrator",
+    "password": "P@ssw0rd!"
+}
