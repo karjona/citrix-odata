@@ -52,7 +52,7 @@ function Test-CitrixDDCConnectivity {
         $OriginalDDCs = $DeliveryControllers
         foreach ($ddc in $DeliveryControllers) {
             Write-Progress -Id 1 -Activity "Connecting to $ddc" `
-            -PercentComplete ($OriginalDDCs.IndexOf($ddc)/$OriginalDDCs.Count*100)
+            -PercentComplete ($OriginalDDCs.IndexOf($ddc)/$OriginalDDCs.length*100)
             try {
                 if ($Credential) {
                     Invoke-CitrixMonitorServiceQuery -DeliveryController $ddc -Credential $Credential `
