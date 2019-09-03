@@ -36,7 +36,7 @@ function Get-CitrixDeliveryGroups {
     
     process {
         try {
-            $Query = '$select=Id,Name&$filter=LifecycleState eq 0'
+            $Query = '$select=Id,Name'
             Write-Progress -Id 1 -Activity "Retrieving Delivery Groups for $DeliveryController"
             if ($Credential) {
                 $DeliveryGroups = Invoke-CitrixMonitorServiceQuery -DeliveryController $DeliveryController `

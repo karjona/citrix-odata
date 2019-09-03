@@ -124,9 +124,12 @@ function Get-CitrixMonitorServiceData {
                 }
                 
                 foreach ($DeliveryGroup in $DeliveryGroupsForDDC.value) {
-                    Write-Progress -Id 1 -Activity 'Retrieving Citrix Virtual Apps and Desktops usage data' `
-                    -Status 'Calculating maximum sessions per Delivery Group' `
-                    -PercentComplete `
+                    Write-Progress -Id 1 -Activity 'Calculating maximum sessions per Delivery Group' `
+                    -Status (
+                    "Total progress: $($DeliveryGroupsForDDC.value.IndexOf($DeliveryGroup))`/" +
+                    "$($DeliveryGroupsForDDC.value.length) - " +
+                    "Calculating sessions for $($DeliveryGroup.Name)"
+                    ) -PercentComplete `
                     ($DeliveryGroupsForDDC.value.IndexOf($DeliveryGroup)/$DeliveryGroupsForDDC.value.length*100)
                     
                     $DeliveryGroupInfo += [PSCustomObject]@{
@@ -138,8 +141,8 @@ function Get-CitrixMonitorServiceData {
                     }
                 }
 
-                Write-Progress -Id 1 -Activity 'Retrieving Citrix Virtual Apps and Desktops usage data' `
-                -Status 'Calculating maximum sessions per Delivery Group' -Completed
+                Write-Progress -Id 1 -Activity 'Calculating maximum sessions per Delivery Group' `
+                -Completed
 
             } else {
                 $DeliveryGroupInfo = $null
