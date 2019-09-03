@@ -59,6 +59,7 @@ function Get-CitrixConcurrentSessions {
             "(Granularity eq $Granularity)"
             )
             
+            Write-Progress -Id 1 -Activity "Retrieving session activity for $DeliveryController"
             if ($Credential) {
                 $ConcurrentSessions = Invoke-CitrixMonitorServiceQuery -DeliveryController $DeliveryController `
                 -Credential $Credential -Endpoint 'SessionActivitySummaries' -Query $Query -ErrorAction Stop
@@ -69,6 +70,8 @@ function Get-CitrixConcurrentSessions {
         } catch {
             $ConnectionError = $_
             throw $ConnectionError
+        } finally {
+            Write-Progress -Id 1 -Activity "Retrieving session activity for $DeliveryController" -Completed
         }
         $ConcurrentSessions
     }
