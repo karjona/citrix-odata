@@ -143,11 +143,11 @@ function Get-CitrixMonitorServiceData {
                 }
                 
                 foreach ($DeliveryGroup in $DeliveryGroupsForDDC.value) {
-                    Write-Progress -Id 1 -Activity 'Calculating maximum sessions per Delivery Group' `
+                    Write-Progress -Id 1 -Activity 'Calculating usage data per Delivery Group' `
                     -Status (
                     "Total progress: $($DeliveryGroupsForDDC.value.IndexOf($DeliveryGroup))`/" +
                     "$($DeliveryGroupsForDDC.value.length) - " +
-                    "Calculating sessions for $($DeliveryGroup.Name)"
+                    "Calculating data for $($DeliveryGroup.Name)"
                     ) -PercentComplete `
                     ($DeliveryGroupsForDDC.value.IndexOf($DeliveryGroup)/$DeliveryGroupsForDDC.value.length*100)
                     
@@ -162,7 +162,7 @@ function Get-CitrixMonitorServiceData {
                     }
                 }
 
-                Write-Progress -Id 1 -Activity 'Calculating maximum sessions per Delivery Group' `
+                Write-Progress -Id 1 -Activity 'Calculating usage data per Delivery Group' `
                 -Completed
 
             } else {
