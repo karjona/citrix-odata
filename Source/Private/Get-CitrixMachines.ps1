@@ -37,8 +37,8 @@ function Get-CitrixMachines {
     process {
         try {
             $Query = (
-            "`$select=DnsName,DesktopGroupId&`$filter=(LifecycleState eq 0) and (DesktopGroupId ne null) " +
-            "and (HostedMachineId ne null)"
+            "`$select=HostedMachineId,DnsName,DesktopGroupId&`$filter=(LifecycleState eq 0) and " +
+            "(DesktopGroupId ne null) and (HostedMachineId ne null)"
             )
             
             Write-Progress -Id 1 -Activity "Retrieving managed machines for $DeliveryController"
