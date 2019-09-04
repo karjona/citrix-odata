@@ -31,8 +31,8 @@ function Get-CitrixMachinesForDG {
     
     process {
         $MachinesForDeliveryGroup = $MachinesObject.value | `
-        Where-Object -FilterScript {$_.DesktopGroupId -eq $DeliveryGroupId} | Get-Unique | Measure-Object | `
-        Select-Object -ExpandProperty Count
+        Where-Object -FilterScript {$_.DesktopGroupId -eq $DeliveryGroupId} | `
+        Select-Object -Property DnsName -Unique | Measure-Object | Select-Object -ExpandProperty Count
         if ($null -eq $MachinesForDeliveryGroup) {
             $MachinesForDeliveryGroup = 0
         }
