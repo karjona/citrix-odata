@@ -40,7 +40,9 @@ function Get-CitrixMonitorServiceData {
     Specifies the end date for the report in yyyy-MM-ddTHH:mm:ss. If you omit the time part, 23:59:59 will be
     automatically appended to the date.
     
-    The default value is yesterday's date, 23:59:59.
+    The default value if no start date is specified is yesterday's date, 23:59:59.
+    If a start date is specified but no end date is provided, the end date will automatically be set 23 hours,
+    59 minutes and 59 seconds after the start date.
     
     .EXAMPLE
     Get-CitrixMonitorServiceData -DeliveryControllers @('myddc01.example.com', 'myddc02.example.com') -Credential $(Get-Credential)
@@ -75,12 +77,27 @@ function Get-CitrixMonitorServiceData {
     $Credential,
     
     [Parameter()]
+    [ValidateScript({
+        if ($(New-TimeSpan -Start $_ -End $(Get-Date)).TotalSeconds -ge 1) {
+            return $true
+        }
+        throw "The provided start date cannot be in the future."
+    })]
     [DateTime]
     $StartDate = "$(Get-Date (Get-Date).AddDays(-1) -Format 'yyyy-MM-ddT00:00:00')",
     
     [Parameter()]
+    [ValidateScript({
+        if ($null -eq $StartDate) {
+            $StartDate = "$(Get-Date (Get-Date).AddDays(-1) -Format 'yyyy-MM-ddT00:00:00')"
+        }
+        if ($(New-TimeSpan -Start $StartDate -End $_).TotalSeconds -ge 1) {
+            return $true
+        }
+        throw "The provided end date cannot be earlier than the start date."
+    })]
     [DateTime]
-    $EndDate = "$(Get-Date (Get-Date).AddDays(-1) -Format 'yyyy-MM-ddT23:59:59')"
+    $EndDate = "$(Get-Date $StartDate.AddSeconds(86399) -Format 'yyyy-MM-ddTHH:mm:ss')"
     )
     
     begin {
