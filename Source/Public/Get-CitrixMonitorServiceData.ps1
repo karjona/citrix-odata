@@ -125,8 +125,10 @@ function Get-CitrixMonitorServiceData {
             if ($Credential) {
                 $DeliveryGroupsForDDC = Get-CitrixDeliveryGroups -DeliveryController $DeliveryController `
                 -Credential $Credential
+                $Machines = Get-CitrixMachines -DeliveryController $DeliveryController -Credential $Credential
             } else {
                 $DeliveryGroupsForDDC = Get-CitrixDeliveryGroups -DeliveryController $DeliveryController
+                $Machines = Get-CitrixMachines -DeliveryController $DeliveryController
             }
             
             if ($DeliveryGroupsForDDC.value.length -ge 1) {
@@ -141,11 +143,11 @@ function Get-CitrixMonitorServiceData {
                 }
                 
                 foreach ($DeliveryGroup in $DeliveryGroupsForDDC.value) {
-                    Write-Progress -Id 1 -Activity 'Calculating maximum sessions per Delivery Group' `
+                    Write-Progress -Id 1 -Activity 'Calculating usage data per Delivery Group' `
                     -Status (
                     "Total progress: $($DeliveryGroupsForDDC.value.IndexOf($DeliveryGroup))`/" +
                     "$($DeliveryGroupsForDDC.value.length) - " +
-                    "Calculating sessions for $($DeliveryGroup.Name)"
+                    "Calculating data for $($DeliveryGroup.Name)"
                     ) -PercentComplete `
                     ($DeliveryGroupsForDDC.value.IndexOf($DeliveryGroup)/$DeliveryGroupsForDDC.value.length*100)
                     
@@ -155,10 +157,12 @@ function Get-CitrixMonitorServiceData {
                         Id = $DeliveryGroup.Id
                         MaxConcurrentSessions = Get-CitrixMaximumSessionsForDG `
                         -SessionsObject $ConcurrentSessionsForDDC -DeliveryGroupId $DeliveryGroup.Id
+                        MachineCount = Get-CitrixMachinesForDG -MachinesObject $Machines `
+                        -DeliveryGroupId $DeliveryGroup.Id
                     }
                 }
 
-                Write-Progress -Id 1 -Activity 'Calculating maximum sessions per Delivery Group' `
+                Write-Progress -Id 1 -Activity 'Calculating usage data per Delivery Group' `
                 -Completed
 
             } else {
