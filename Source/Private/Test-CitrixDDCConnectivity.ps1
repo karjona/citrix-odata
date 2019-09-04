@@ -55,10 +55,16 @@ function Test-CitrixDDCConnectivity {
             -PercentComplete ($OriginalDDCs.IndexOf($ddc)/$OriginalDDCs.length*100)
             try {
                 if ($Credential) {
-                    Invoke-CitrixMonitorServiceQuery -DeliveryController $ddc -Credential $Credential `
-                    -ErrorAction Stop | Out-Null
+                    $Response = Invoke-CitrixMonitorServiceQuery -DeliveryController $ddc -Credential $Credential `
+                    -ErrorAction Stop
                 } else {
-                    Invoke-CitrixMonitorServiceQuery -DeliveryController $ddc -ErrorAction Stop | Out-Null
+                    $Response = Invoke-CitrixMonitorServiceQuery -DeliveryController $ddc -ErrorAction Stop
+                }
+
+                if (-Not $Response[0].'odata.metadata' -contains 'Citrix') {
+                    throw ("The server responded with a non-valid object. "+ 
+                    "Is $ddc a valid Citrix Virtual Apps and Desktops Delivery Controller? " +
+                    "The server response was: $Response")
                 }
             } catch {
                 $ConnectionError = $_
