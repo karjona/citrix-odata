@@ -125,10 +125,8 @@ function Get-CitrixMonitorServiceData {
             if ($Credential) {
                 $DeliveryGroupsForDDC = Get-CitrixDeliveryGroups -DeliveryController $DeliveryController `
                 -Credential $Credential
-                $Machines = Get-CitrixMachines -DeliveryController $DeliveryController -Credential $Credential
             } else {
                 $DeliveryGroupsForDDC = Get-CitrixDeliveryGroups -DeliveryController $DeliveryController
-                $Machines = Get-CitrixMachines -DeliveryController $DeliveryController
             }
             
             if ($DeliveryGroupsForDDC.value.length -ge 1) {
@@ -137,9 +135,17 @@ function Get-CitrixMonitorServiceData {
                     $SessionsForDDC = Get-CitrixSessionActivity `
                     -DeliveryController $DeliveryController -Credential $Credential -StartDate $StartDate `
                     -EndDate $EndDate
+                    $Machines = Get-CitrixMachines -DeliveryController $DeliveryController -Credential $Credential
+                    $Failures = Get-CitrixFailures `
+                    -DeliveryController $DeliveryController -Credential $Credential -StartDate $StartDate `
+                    -EndDate $EndDate
                 } else {
                     $SessionsForDDC = Get-CitrixSessionActivity `
                     -DeliveryController $DeliveryController -StartDate $StartDate -EndDate $EndDate
+                    $Machines = Get-CitrixMachines -DeliveryController $DeliveryController
+                    $Failures = Get-CitrixFailures `
+                    -DeliveryController $DeliveryController -Credential $Credential -StartDate $StartDate `
+                    -EndDate $EndDate
                 }
                 
                 foreach ($DeliveryGroup in $DeliveryGroupsForDDC.value) {
@@ -159,6 +165,8 @@ function Get-CitrixMonitorServiceData {
                         -SessionsObject $SessionsForDDC -DeliveryGroupId $DeliveryGroup.Id
                         AverageLogOnDuration = Get-CitrixAverageLogOnDurationForDG `
                         -SessionsObject $SessionsForDDC -DeliveryGroupId $DeliveryGroup.Id
+                        Failures = Get-CitrixFailuresForDG `
+                        -FailuresObject $Failures -DeliveryGroupId $DeliveryGroup.Id
                         MachineCount = Get-CitrixMachinesForDG -MachinesObject $Machines `
                         -DeliveryGroupId $DeliveryGroup.Id
                     }
