@@ -157,6 +157,8 @@ function Get-CitrixMonitorServiceData {
                         Id = $DeliveryGroup.Id
                         MaxConcurrentSessions = Get-CitrixMaximumSessionsForDG `
                         -SessionsObject $SessionsForDDC -DeliveryGroupId $DeliveryGroup.Id
+                        AverageLogOnDuration = Get-CitrixAverageLogOnDurationForDG `
+                        -SessionsObject $SessionsForDDC -DeliveryGroupId $DeliveryGroup.Id
                         MachineCount = Get-CitrixMachinesForDG -MachinesObject $Machines `
                         -DeliveryGroupId $DeliveryGroup.Id
                     }
