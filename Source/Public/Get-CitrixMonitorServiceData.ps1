@@ -134,11 +134,11 @@ function Get-CitrixMonitorServiceData {
             if ($DeliveryGroupsForDDC.value.length -ge 1) {
                 $DeliveryGroupInfo = @()
                 if ($Credential) {
-                    $ConcurrentSessionsForDDC = Get-CitrixConcurrentSessions `
+                    $SessionsForDDC = Get-CitrixSessionActivity `
                     -DeliveryController $DeliveryController -Credential $Credential -StartDate $StartDate `
                     -EndDate $EndDate
                 } else {
-                    $ConcurrentSessionsForDDC = Get-CitrixConcurrentSessions `
+                    $SessionsForDDC = Get-CitrixSessionActivity `
                     -DeliveryController $DeliveryController -StartDate $StartDate -EndDate $EndDate
                 }
                 
@@ -156,7 +156,7 @@ function Get-CitrixMonitorServiceData {
                         Name = $DeliveryGroup.Name
                         Id = $DeliveryGroup.Id
                         MaxConcurrentSessions = Get-CitrixMaximumSessionsForDG `
-                        -SessionsObject $ConcurrentSessionsForDDC -DeliveryGroupId $DeliveryGroup.Id
+                        -SessionsObject $SessionsForDDC -DeliveryGroupId $DeliveryGroup.Id
                         MachineCount = Get-CitrixMachinesForDG -MachinesObject $Machines `
                         -DeliveryGroupId $DeliveryGroup.Id
                     }
