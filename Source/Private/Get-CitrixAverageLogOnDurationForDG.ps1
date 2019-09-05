@@ -32,8 +32,7 @@ function Get-CitrixAverageLogOnDurationForDG {
     process {
         $AverageLogOnForDeliveryGroup = $SessionsObject.value | `
         Where-Object -FilterScript {$_.DesktopGroupId -eq $DeliveryGroupId -and $_.TotalLogOnCount -ge 1} | `
-        Select-Object -Property TotalLogOnDuration | Measure-Object -Average | `
-        Select-Object -ExpandProperty Average
+        Measure-Object -Property TotalLogOnDuration -Average | Select-Object -ExpandProperty Average
         if ($null -eq $AverageLogOnForDeliveryGroup) {
             $AverageLogOnForDeliveryGroup = 0
         }
