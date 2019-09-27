@@ -57,7 +57,7 @@ function Get-CitrixFailures {
             "`$select=DesktopGroupId,FailureCount&" +
             "`$filter=(SummaryDate gt DateTime'$(Get-Date -Date $StartDate -Format "yyyy-MM-ddTHH:mm:ss")') and " +
             "(SummaryDate lt DateTime'$(Get-Date -Date $EndDate -Format "yyyy-MM-ddTHH:mm:ss")') and " +
-            "(Granularity eq $Granularity)"
+            "(FailureCategory eq 1) and (Granularity eq $Granularity)"
             )
             
             Write-Progress -Id 1 -Activity "Retrieving failures for $DeliveryController"
