@@ -3,6 +3,7 @@ function Get-CitrixAverageLogOnDurationForDG {
     <#
     .SYNOPSIS
     
+    
     .DESCRIPTION
     
     .LINK
@@ -15,6 +16,7 @@ function Get-CitrixAverageLogOnDurationForDG {
     .COMPONENT
     citrix-odata
     #>
+    
     
     [CmdletBinding()]
     [OutputType('int')]
@@ -30,10 +32,18 @@ function Get-CitrixAverageLogOnDurationForDG {
     )
     
     process {
-        $AverageLogOnForDeliveryGroup = $SessionsObject.value | `
-        Where-Object -FilterScript {$_.DesktopGroupId -eq $DeliveryGroupId -and $_.TotalLogOnCount -ge 1} | `
-        Measure-Object -Property TotalLogOnDuration -Average | Select-Object -ExpandProperty Average
-        if ($null -eq $AverageLogOnForDeliveryGroup) {
+        $TotalLogOnCountForDeliveryGroup = $SessionsObject.value |
+        Where-Object -FilterScript {$_.DesktopGroupId -eq $DeliveryGroupId} |
+        Select-Object -ExpandProperty TotalLogOnCount | Measure-Object -Property TotalLogOnCount -Sum |
+        Select-Object -ExpandProperty Sum
+
+        $TotalLogOnForDeliveryGroup = $SessionsObject.value |
+        Where-Object -FilterScript {$_.DesktopGroupId -eq $DeliveryGroupId -and $_.TotalLogOnCount -ge 1} |
+        Measure-Object -Property TotalLogOnDuration -Sum | Select-Object -ExpandProperty Sum
+        
+        if ($null -ne $TotalLogOnForDeliveryGroup) {
+            $AverageLogOnForDeliveryGroup = $TotalLogOnForDeliveryGroup / $TotalLogOnCountForDeliveryGroup
+        } else {
             $AverageLogOnForDeliveryGroup = 0
         }
         $AverageLogOnForDeliveryGroup / 1000
