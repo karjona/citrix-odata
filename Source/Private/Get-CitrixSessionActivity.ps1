@@ -1,4 +1,4 @@
-function Get-CitrixConcurrentSessions {
+function Get-CitrixSessionActivity {
     
     <#
     .SYNOPSIS
