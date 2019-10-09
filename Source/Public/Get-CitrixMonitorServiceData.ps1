@@ -5,8 +5,8 @@ function Get-CitrixMonitorServiceData {
     Returns Citrix Virtual Apps and Desktops usage data over a period of time.
     
     .DESCRIPTION
-    The Get-CitrixMonitorServiceData cmdlet gets an object with usage data (sessions, number of virtual machines)
-    of a Citrix Virtual Apps and Desktops Site over an specified period of time.
+    The Get-CitrixMonitorServiceData cmdlet returns an object with usage data (sessions, number of virtual
+    machines) of a Citrix Virtual Apps and Desktops Site over an specified period of time.
     
     This cmdlet takes a required parameter: a list of Citrix Virtual Apps and Desktops Delivery Controllers.
     Without any other parameters, it will use the current user to connect to the DDCs and collect usage information
@@ -61,6 +61,7 @@ function Get-CitrixMonitorServiceData {
     .COMPONENT
     citrix-odata
     #>
+    
     
     [CmdletBinding()]
     [OutputType('citrix-odata.CitrixMonitorServiceData')]
@@ -117,11 +118,11 @@ function Get-CitrixMonitorServiceData {
         if ($DeliveryControllers.Count -ge 2) {
             $DeliveryControllerObject = @()
         }
-
+        
         foreach ($DeliveryController in $DeliveryControllers) {
             Write-Progress -Id 0 -Activity 'Retrieving Citrix Virtual Apps and Desktops usage data' `
             -Status 'Retrieving usage data for Delivery Controllers'
-
+            
             if ($Credential) {
                 $DeliveryGroupsForDDC = Get-CitrixDeliveryGroups -DeliveryController $DeliveryController `
                 -Credential $Credential
@@ -171,10 +172,10 @@ function Get-CitrixMonitorServiceData {
                         -DeliveryGroupId $DeliveryGroup.Id
                     }
                 }
-
+                
                 Write-Progress -Id 1 -Activity 'Calculating usage data per Delivery Group' `
                 -Completed
-
+                
             } else {
                 $DeliveryGroupInfo = $null
             }
