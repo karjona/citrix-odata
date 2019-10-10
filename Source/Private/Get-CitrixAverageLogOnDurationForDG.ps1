@@ -34,8 +34,7 @@ function Get-CitrixAverageLogOnDurationForDG {
     process {
         $TotalLogOnCountForDeliveryGroup = $SessionsObject.value |
         Where-Object -FilterScript {$_.DesktopGroupId -eq $DeliveryGroupId} |
-        Select-Object -ExpandProperty TotalLogOnCount | Measure-Object -Property TotalLogOnCount -Sum |
-        Select-Object -ExpandProperty Sum
+        Measure-Object -Property TotalLogOnCount -Sum | Select-Object -ExpandProperty Sum
 
         $TotalLogOnForDeliveryGroup = $SessionsObject.value |
         Where-Object -FilterScript {$_.DesktopGroupId -eq $DeliveryGroupId -and $_.TotalLogOnCount -ge 1} |
