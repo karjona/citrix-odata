@@ -52,16 +52,23 @@ function Test-CitrixDDCConnectivity {
     process {
         $OriginalDDCs = $DeliveryControllers
         foreach ($ddc in $DeliveryControllers) {
-            Write-Progress -Id 1 -Activity "Connecting to $ddc" `
-            -PercentComplete ($OriginalDDCs.IndexOf($ddc)/$OriginalDDCs.length*100)
+            $WriteProgressParams = @{
+                Id = 1
+                Activity = "Connecting to $ddc"
+                PercentComplete = $OriginalDDCs.IndexOf($ddc)/$OriginalDDCs.length*100
+            }
+            Write-Progress @WriteProgressParams
             try {
-                if ($Credential) {
-                    $Response = Invoke-CitrixMonitorServiceQuery -DeliveryController $ddc -Credential $Credential `
-                    -ErrorAction Stop
-                } else {
-                    $Response = Invoke-CitrixMonitorServiceQuery -DeliveryController $ddc -ErrorAction Stop
+                $InvokeCitrixMonitorServiceQueryParams = @{
+                    DeliveryController = $ddc
+                    ErrorAction = 'Stop'
                 }
-
+                if ($Credential) {
+                    $InvokeCitrixMonitorServiceQueryParams.Add("Credential", $Credential)
+                }
+                
+                $Response = Invoke-CitrixMonitorServiceQuery @InvokeCitrixMonitorServiceQueryParams
+                
                 if (-Not $Response[0].'odata.metadata' -contains 'Citrix') {
                     throw ("The server responded with a non-valid object. "+ 
                     "Is $ddc a valid Citrix Virtual Apps and Desktops Delivery Controller? " +

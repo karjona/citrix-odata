@@ -4,7 +4,7 @@ function Get-CitrixMachines {
     .SYNOPSIS
     Retrieves information about the managed machines for a single Citrix Virtual Apps and Desktops Delivery
     Controller.
-
+    
     .DESCRIPTION
     This cmdlet returns a custom object with every managed machine hostname, ID and the Delivery Group ID they
     pertain to for a specific Delivery Controller. The cmdlet does not retrieve information about machines that
@@ -26,7 +26,7 @@ function Get-CitrixMachines {
     citrix-odata
     #>
     
-
+    
     [CmdletBinding()]
     [OutputType('PSCustomObject')]
     
@@ -40,14 +40,14 @@ function Get-CitrixMachines {
     $Credential
     )
     
-
+    
     process {
         try {
             $Query = (
             "`$select=HostedMachineId,DnsName,DesktopGroupId&`$filter=(LifecycleState eq 0) and " +
             "(DesktopGroupId ne null) and (HostedMachineId ne null)"
             )
-
+            
             $InvokeCitrixMonitorServiceQueryParams = @{
                 DeliveryController = $DeliveryController
                 Endpoint = 'Machines'
