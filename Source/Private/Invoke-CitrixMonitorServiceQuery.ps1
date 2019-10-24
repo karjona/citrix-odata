@@ -86,29 +86,28 @@ function Invoke-CitrixMonitorServiceQuery {
             $Result = Invoke-RestMethod @InvokeRestMethodParams
         } catch {
             $ConnectionError = $_
-            if ($ConnectionError.Exception.Response.StatusCode) {   # Handle 401 (invalid credentials) error
-                if ($ConnectionError.Exception.Response.StatusCode.ToString() -eq 'Unauthorized') {
-                    if (!$Credential) {
-                        Write-Error ("The current user does not have at least read-only administrator " +
-                        "permissions on $DeliveryController.")
-                    } else {
-                        Write-Error ("The supplied credentials do not have at least read-only administrator " +
-                        "permissions on $DeliveryController.")
-                    }
-                } else {    # There's a web server on that address, but responded with an error (404, 500...)
+            $StatusCodeString = $ConnectionError.Exception.Response.StatusCode.ToString()
+            $ExceptionString = $ConnectionError.Exception.Status.ToString()
+            
+            if ($StatusCodeString -eq 'Unauthorized' -and -Not $Credential) {
+                Write-Error ("The current user does not have at least read-only administrator " +
+                "permissions on $DeliveryController.")
+            } elseif ($StatusCodeString -eq 'Unauthorized' -and $Credential) {
+                Write-Error ("The supplied credentials do not have at least read-only administrator " +
+                "permissions on $DeliveryController.")
+            } elseif ($StatusCodeString -ne 'Unauthorized') {
                 Write-Error ("The server on $DeliveryController responded with an error: " +
                 "$($ConnectionError.Exception.Message)")
             }
-        } else {    # Handle DNS resolution errors
-            if ($ConnectionError.Exception.Status.ToString() -eq 'NameResolutionFailure') {
+            
+            if ($ExceptionString -eq 'NameResolutionFailure') {
                 Write-Error "Could not find host $DeliveryController."
-            } else {    # Handle all other errors
-                Write-Error ("An error occurred while trying to connect to $DeliveryController. Check " +
-                "network connectivity and that the specified host is a Citrix Delivery Controller.`r`n" +
-                "$($ConnectionError.Exception.Message)")
             }
+            
+            Write-Error ("An error occurred while trying to connect to $DeliveryController. Check " +
+            "network connectivity and that the specified host is a Citrix Delivery Controller.`r`n" +
+            "$($ConnectionError.Exception.Message)")
         }
+        $Result
     }
-    $Result
-}
 }
