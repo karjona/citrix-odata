@@ -127,20 +127,25 @@ function Get-CitrixMonitorServiceData {
         }
         
         foreach ($DeliveryController in $DeliveryControllers) {
-            $WriteProgressParams["Status"] = "Retrieving usage data for Delivery Controller: $DeliveryController"
-            $WriteProgressParams["Completed"] = $null
+            $WriteProgressParams = @{
+                Id = 0
+                Activity = 'Retrieving Citrix Virtual Apps and Desktops usage data'
+                Status = "Retrieving usage data for Delivery Controller: $DeliveryController"
+            }
             Write-Progress @WriteProgressParams
-            
+
             $RequestParams = @{
                 DeliveryController = $DeliveryController
             }
+            $RequestWithDatesParams = @{
+                DeliveryController = $DeliveryController
+                StartDate = $StartDate
+                EndDate = $EndDate
+            }
             if ($Credential) {
                 $RequestParams.Add("Credential", $Credential)
+                $RequestWithDatesParams.Add("Credential", $Credential)
             }
-            
-            $RequestWithDatesParams = $RequestParams
-            $RequestWithDatesParams.Add("StartDate", $StartDate)
-            $RequestWithDatesParams.Add("EndDate", $EndDate)
             
             $DeliveryGroupsForDDC = Get-CitrixDeliveryGroups @RequestParams
             
