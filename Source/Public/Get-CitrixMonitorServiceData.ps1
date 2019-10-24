@@ -147,7 +147,9 @@ function Get-CitrixMonitorServiceData {
                 $RequestWithDatesParams.Add("Credential", $Credential)
             }
             
+            Write-Progress -Id 1 -Activity 'Retrieving Delivery Group Data'
             $DeliveryGroupsForDDC = Get-CitrixDeliveryGroups @RequestParams
+            Write-Progress -Id 1 -Activity 'Retrieving Delivery Group Data' -Completed
             
             if ($DeliveryGroupsForDDC.value.length -ge 1) {
                 $DeliveryGroupInfo = @()
