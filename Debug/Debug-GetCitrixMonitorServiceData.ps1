@@ -27,18 +27,22 @@ citrix-odata
 try {
     Clear-Host
     
-    $VariablesFromJson = Get-Content `
-    -Path $(Join-Path -Path $PSScriptRoot -ChildPath 'GetCitrixMonitorServiceData.variables.json' ) | `
-    ConvertFrom-Json
-
+    $GetContentParams = @{
+        Path = $(Join-Path -Path $PSScriptRoot -ChildPath 'GetCitrixMonitorServiceData.variables.json')
+    }
+    $VariablesFromJson = Get-Content @GetContentParams | ConvertFrom-Json
+    
     Import-Module -Name '.\Source\citrix-odata.psd1' -Force
-
+    
     $Password = ConvertTo-SecureString -String $VariablesFromJson.password -AsPlainText -Force
     $Credential = New-Object System.Management.Automation.PSCredential($VariablesFromJson.username, $Password)
-
-    $Result = Get-CitrixMonitorServiceData -DeliveryControllers $VariablesFromJson.DeliveryControllers `
-    -Credential $Credential
-
+    
+    $GetCitrixMonitorServiceDataParams = @{
+        DeliveryControllers = $VariablesFromJson.DeliveryControllers
+        Credential = $Credential
+    }
+    $Result = Get-CitrixMonitorServiceData @GetCitrixMonitorServiceDataParams
+    
     $Result
 } catch {
     $DebugError = $_
