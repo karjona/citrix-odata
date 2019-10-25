@@ -32,7 +32,7 @@ PowerShellGet is bundled by default with Windows 10, Windows Server 2016, WMF 5 
 ## Usage
 After installing the module, you can run the `Get-CitrixMonitorServiceData` cmdlet to retrieve the usage data. You can store the retrieved data to a variable and then transform the results object to JSON or other format as you need.
 
-<img src="https://raw.githubusercontent.com/karjona/citrix-odata/citrix-odata-demo.gif" alt="citrix-odata demo" width="878">
+<img src="https://karjona.github.io/citrix-odata/citrix-odata-demo.gif" alt="citrix-odata demo" width="878">
 
 ### Arguments
 
